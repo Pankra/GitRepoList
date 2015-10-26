@@ -3,6 +3,7 @@ package com.pankra.gitrepolist;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 
 
@@ -36,7 +37,12 @@ public class UserListActivity extends FragmentActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user_list);
+        setContentView(R.layout.activity_user_list_with_fragment);
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        RecyclerUserListFragment fragment = new RecyclerUserListFragment();
+        transaction.replace(R.id.user_list_container, fragment);
+        transaction.commit();
 
 
         if (findViewById(R.id.user_detail_container) != null) {
@@ -48,22 +54,12 @@ public class UserListActivity extends FragmentActivity
 
             // In two-pane mode, list items should be given the
             // 'activated' state when touched.
-            ((UserListFragment) getSupportFragmentManager()
-                    .findFragmentById(R.id.user_list))
-                    .setActivateOnItemClick(true);
+//            ((UserListFragment) getSupportFragmentManager()
+//                    .findFragmentById(R.id.user_list))
+//                    .setActivateOnItemClick(true);
         }
-//        vi = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        // TODO: If exposing deep links into your app, handle intents here.
     }
 
-
-
-//    public UserAdapter getUserAdapter(ArrayList<User> users) {
-//        if (userAdapter == null) {
-//            userAdapter = new UserAdapter(this, R.layout.user_list_single, users);
-//        }
-//        return userAdapter;
-//    }
 
     /**
      * Callback method from {@link UserListFragment.Callbacks}
@@ -91,31 +87,4 @@ public class UserListActivity extends FragmentActivity
             startActivity(detailIntent);
         }
     }
-
-//    public class UserAdapter extends ArrayAdapter<User> {
-//        private List<User> users;
-//
-//        public UserAdapter(Context context, int textViewResourceId, List<User> users) {
-//            super(context, textViewResourceId, users);
-//            this.users = users;
-//        }
-//
-//        @Override
-//        public View getView(int position, View convertView, ViewGroup parent) {
-//            View v = convertView;
-//            if (v == null) {
-//                vi = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-//                v = vi.inflate(R.layout.user_list_single, null);
-//            }
-//            User u = users.get(position);
-//            if (u != null) {
-//                ImageView iv = (ImageView) v.findViewById(R.id.img);
-//                if (iv != null) {
-//                    Glide.with(getContext()).load(u.getAvatar_url()).override(50,50).into(iv);
-//                }
-//            }
-//            return v;
-//        }
-//    }
-
 }
