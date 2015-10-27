@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.pankra.gitrepolist.dummy.DummyContent;
+import com.pankra.gitrepolist.model.User;
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ import static com.pankra.gitrepolist.RecyclerUserListFragment.*;
  * Created by SPankratov on 26.10.2015.
  */
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
-    private List<String> mDataSet;
+    private List<User> mDataSet;
     private UserListCallback mUserListCallback;
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -45,7 +46,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
         }
     }
 
-    public UserAdapter(List<String> mDataSet) {
+    public UserAdapter(List<User> mDataSet) {
         this.mDataSet = mDataSet;
     }
 
@@ -64,7 +65,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.getTextView().setText(mDataSet.get(position));
+        holder.getTextView().setText(mDataSet.get(position).getLogin());
     }
 
     @Override

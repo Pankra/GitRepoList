@@ -6,21 +6,30 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.pankra.gitrepolist.dummy.DummyContent;
+import com.pankra.gitrepolist.model.User;
+import com.pankra.gitrepolist.service.GitHubService;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit.Call;
+import retrofit.Callback;
+import retrofit.GsonConverterFactory;
+import retrofit.Response;
+import retrofit.Retrofit;
+
 /**
- * Created by SPankratov on 26.10.2015. 
+ * Created by SPankratov on 26.10.2015.
  */
 public class RecyclerUserListFragment extends Fragment {
-    protected List<String> mDataSet;
+    protected List<User> mDataSet = new ArrayList<>();
     protected RecyclerView mRecyclerView;
     protected UserAdapter mAdapter;
 
@@ -56,21 +65,33 @@ public class RecyclerUserListFragment extends Fragment {
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        mAdapter = new UserAdapter(mDataSet);
-        mAdapter.setUserListCallback(mCallback);
-
-        mRecyclerView.setAdapter(mAdapter);
-
-
         return rootView;
     }
 
     private void initDataSet() {
-        List<String> dataSet = new ArrayList<>();
-        for (DummyContent.DummyItem item : DummyContent.ITEMS) {
-            dataSet.add(item.toString());
-        }
-        mDataSet = dataSet;
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://api.github.com")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        GitHubService gitHubService = retrofit.create(GitHubService.class);
+
+        Call<List<User>> call = gitHubService.getUsers();
+
+        call.enqueue(new Callback<List<User>>() {
+            @Override
+            public void onResponse(Response<List<User>> response, Retrofit retrofit) {
+                mDataSet = response.body();
+                mAdapter = new UserAdapter(mDataSet);
+                mAdapter.setUserListCallback(mCallback);
+
+                mRecyclerView.setAdapter(mAdapter);
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Log.e("getUser", t.getMessage());
+            }
+        });
     }
 
     @Override
