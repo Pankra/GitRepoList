@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
-import android.view.LayoutInflater;
 
 
 /**
@@ -14,30 +13,20 @@ import android.view.LayoutInflater;
  * lead to a {@link UserDetailActivity} representing
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
- * <p/>
- * The activity makes heavy use of fragments. The list of items is a
- * {@link UserListFragment} and the item details
- * (if present) is a {@link UserDetailFragment}.
- * <p/>
- * This activity also implements the required
- * {@link UserListFragment.Callbacks} interface
- * to listen for item selections.
  */
 public class UserListActivity extends FragmentActivity
-        implements UserListFragment.Callbacks {
+        implements RecyclerUserListFragment.UserListCallback {
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
      */
     private boolean mTwoPane;
-//    private UserAdapter userAdapter;
-    private LayoutInflater vi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user_list_with_fragment);
+        setContentView(R.layout.activity_user_list);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         RecyclerUserListFragment fragment = new RecyclerUserListFragment();
@@ -62,7 +51,7 @@ public class UserListActivity extends FragmentActivity
 
 
     /**
-     * Callback method from {@link UserListFragment.Callbacks}
+     * Callback method from {@link RecyclerUserListFragment.UserListCallback}
      * indicating that the item with the given ID was selected.
      */
     @Override
