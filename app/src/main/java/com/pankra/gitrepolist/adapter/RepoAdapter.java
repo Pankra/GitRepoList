@@ -1,5 +1,9 @@
-package com.pankra.gitrepolist;
+package com.pankra.gitrepolist.adapter;
 
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -7,27 +11,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.pankra.gitrepolist.dummy.DummyContent;
-import com.pankra.gitrepolist.model.User;
+import com.pankra.gitrepolist.R;
+import com.pankra.gitrepolist.model.Repo;
 
 import java.util.List;
-
-import static com.pankra.gitrepolist.RecyclerUserListFragment.*;
 
 /**
  * Created by SPankratov on 26.10.2015.
  */
-public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
-    private List<User> mDataSet;
-    private UserListCallback mUserListCallback;
+public class RepoAdapter extends RecyclerView.Adapter<RepoAdapter.ViewHolder>{
+    private static List<Repo> mDataSet;
+    private static Context mContext;
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private final TextView textView;
-        private UserListCallback listCallback;
 
-        public void setListCallback(UserListCallback listCallback) {
-            this.listCallback = listCallback;
-        }
 
         public ViewHolder(View v) {
             super(v);
@@ -39,33 +37,40 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
             return textView;
         }
 
+
         @Override
         public void onClick(View v) {
             Log.d("DDDD", "Element " + getLayoutPosition() + " clicked.");
-            listCallback.onItemSelected(DummyContent.ITEMS.get(getLayoutPosition()).id);
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(mDataSet.get(getLayoutPosition()).getHtml_url()));
+            mContext.startActivity(i);
         }
     }
 
-    public UserAdapter(List<User> mDataSet) {
+    public RepoAdapter(Context context, List<Repo> mDataSet) {
         this.mDataSet = mDataSet;
+        this.mContext = context;
     }
 
-    public void setUserListCallback(UserListCallback userListCallback) {
-        this.mUserListCallback = userListCallback;
-    }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.text_row_item, parent, false);
-        ViewHolder vh = new ViewHolder(v);
-        vh.setListCallback(mUserListCallback);
-        return vh;
+                .inflate(R.layout.repo_row_item, parent, false);
+        return new ViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.getTextView().setText(mDataSet.get(position).getLogin());
+        Repo repo = mDataSet.get(position);
+        String rowText = (repo.isFork() ? "f " : "") + repo.getName() + " (" + repo.getDescription() + ") \n" +
+                "html_url: " + repo.getHtml_url() + "\n" +
+                "owner: " + repo.getOwner_url();
+
+        holder.getTextView().setText(rowText);
+        if (repo.isFork()) {
+            holder.getTextView().setBackgroundColor(Color.GREEN);
+        }
     }
 
     @Override

@@ -8,11 +8,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.pankra.gitrepolist.dummy.DummyContent;
+import com.pankra.gitrepolist.adapter.UserAdapter;
 import com.pankra.gitrepolist.model.User;
 import com.pankra.gitrepolist.service.GitHubService;
 
@@ -81,7 +80,7 @@ public class RecyclerUserListFragment extends Fragment {
             @Override
             public void onResponse(Response<List<User>> response, Retrofit retrofit) {
                 mDataSet = response.body();
-                mAdapter = new UserAdapter(mDataSet);
+                mAdapter = new UserAdapter(getContext(), mDataSet);
                 mAdapter.setUserListCallback(mCallback);
 
                 mRecyclerView.setAdapter(mAdapter);
@@ -109,12 +108,5 @@ public class RecyclerUserListFragment extends Fragment {
         super.onDetach();
 
         mCallback = sCallback;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        boolean result = super.onOptionsItemSelected(item);
-        mCallback.onItemSelected(DummyContent.ITEMS.get(item.getItemId()).id);
-        return result;
     }
 }

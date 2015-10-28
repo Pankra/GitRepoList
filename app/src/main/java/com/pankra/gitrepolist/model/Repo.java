@@ -7,10 +7,14 @@ public class Repo {
     long id;
     String name;
     String full_name;
-    String owner_url;
+    Owner owner;
     String html_url;
     String description;
     boolean fork;
+
+    class Owner {
+        String url;
+    }
 
     public long getId() {
         return id;
@@ -37,11 +41,7 @@ public class Repo {
     }
 
     public String getOwner_url() {
-        return owner_url;
-    }
-
-    public void setOwner_url(String owner_url) {
-        this.owner_url = owner_url;
+        return owner.url;
     }
 
     public String getHtml_url() {

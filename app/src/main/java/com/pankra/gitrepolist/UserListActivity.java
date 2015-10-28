@@ -40,12 +40,6 @@ public class UserListActivity extends FragmentActivity
             // res/values-sw600dp). If this view is present, then the
             // activity should be in two-pane mode.
             mTwoPane = true;
-
-            // In two-pane mode, list items should be given the
-            // 'activated' state when touched.
-//            ((UserListFragment) getSupportFragmentManager()
-//                    .findFragmentById(R.id.user_list))
-//                    .setActivateOnItemClick(true);
         }
     }
 
@@ -61,7 +55,7 @@ public class UserListActivity extends FragmentActivity
             // adding or replacing the detail fragment using a
             // fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(UserDetailFragment.ARG_ITEM_ID, id);
+            arguments.putString(UserDetailFragment.USER_LOGIN, id);
             UserDetailFragment fragment = new UserDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
@@ -72,7 +66,7 @@ public class UserListActivity extends FragmentActivity
             // In single-pane mode, simply start the detail activity
             // for the selected item ID.
             Intent detailIntent = new Intent(this, UserDetailActivity.class);
-            detailIntent.putExtra(UserDetailFragment.ARG_ITEM_ID, id);
+            detailIntent.putExtra(UserDetailFragment.USER_LOGIN, id);
             startActivity(detailIntent);
         }
     }

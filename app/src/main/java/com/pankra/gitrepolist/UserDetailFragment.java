@@ -2,12 +2,25 @@ package com.pankra.gitrepolist;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
-import com.pankra.gitrepolist.dummy.DummyContent;
+import com.pankra.gitrepolist.adapter.RepoAdapter;
+import com.pankra.gitrepolist.model.Repo;
+import com.pankra.gitrepolist.service.GitHubService;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit.Call;
+import retrofit.Callback;
+import retrofit.GsonConverterFactory;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * A fragment representing a single User detail screen.
@@ -16,16 +29,14 @@ import com.pankra.gitrepolist.dummy.DummyContent;
  * on handsets.
  */
 public class UserDetailFragment extends Fragment {
+    protected List<Repo> mDataSet = new ArrayList<>();
+    protected RecyclerView mRecyclerView;
+    protected RepoAdapter mAdapter;
     /**
      * The fragment argument representing the item ID that this fragment
      * represents.
      */
-    public static final String ARG_ITEM_ID = "item_id";
-
-    /**
-     * The dummy content this fragment is presenting.
-     */
-    private DummyContent.DummyItem mItem;
+    public static final String USER_LOGIN = "user_login";
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -38,23 +49,44 @@ public class UserDetailFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments().containsKey(ARG_ITEM_ID)) {
-            // Load the dummy content specified by the fragment
-            // arguments. In a real-world scenario, use a Loader
-            // to load content from a content provider.
-            mItem = DummyContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
+        if (getArguments().containsKey(USER_LOGIN)) {
+
+            getRepoList(getArguments().getString(USER_LOGIN));
         }
+    }
+
+    private void getRepoList(String login) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://api.github.com")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        GitHubService gitHubService = retrofit.create(GitHubService.class);
+
+        Call<List<Repo>> call = gitHubService.getRepos(login);
+
+        call.enqueue(new Callback<List<Repo>>() {
+            @Override
+            public void onResponse(Response<List<Repo>> response, Retrofit retrofit) {
+                mDataSet = response.body();
+                mAdapter = new RepoAdapter(getContext(), mDataSet);
+
+                mRecyclerView.setAdapter(mAdapter);
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Log.e("getUser", t.getMessage());
+            }
+        });
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_user_detail, container, false);
+        View rootView = inflater.inflate(R.layout.recycler_user_list_fragment, container, false);
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
 
-        // Show the dummy content as text in a TextView.
-        if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.user_detail)).setText(mItem.content);
-        }
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         return rootView;
     }

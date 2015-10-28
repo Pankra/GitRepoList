@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">GitRepoList</string>
-    <string name="title_user_detail">User Detail</string>
+    <string name="title_user_detail">User Repo List</string>
 </resources>
